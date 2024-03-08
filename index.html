@@ -2,35 +2,46 @@
 <html>
   <head>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
     <script>
-      // シーンが読み込まれた時に呼ばれる
       AFRAME.registerComponent('shooter-game', {
         init: function () {
-          // ゲームロジックを管理するメソッド
-          this.startGame();
+          this.setupCamera();
         },
 
         startGame: function () {
-          // a-boxを出現させるインターバル
           this.boxInterval = setInterval(this.spawnBox.bind(this), 1000);
         },
 
         spawnBox: function () {
-          // ランダムな位置にa-boxを生成する
-          const x = Math.random() * 10 - 5; // -5 ~ 5 の範囲
+          const x = Math.random() * 10 - 5;
           const y = Math.random() * 5;
-          const z = Math.random() * 10 - 15; // -15 ~ -5 の範囲
+          const z = Math.random() * 10 - 15;
           const box = document.createElement('a-box');
           box.setAttribute('position', `${x} ${y} ${z}`);
           box.setAttribute('color', '#4CC3D9');
           this.el.sceneEl.appendChild(box);
+        },
+
+        setupCamera: function () {
+          navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+              const video = document.getElementById('video');
+              video.srcObject = stream;
+              video.play();
+            })
+            .catch((err) => console.error('カメラへのアクセスが拒否されました:', err));
         }
       });
     </script>
   </head>
   <body>
-    <a-scene>
+    <a-scene shooter-game>
       <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+      <a-assets>
+        <video id="video" autoplay loop></video>
+      </a-assets>
+      <!-- <a-entity camera chromakey-material="videoEl: #video; color: 0.2 0.8 0.3"></a-entity> -->
     </a-scene>
   </body>
 </html>

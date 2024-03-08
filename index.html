@@ -1,20 +1,35 @@
 <!DOCTYPE html>
 <html>
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <!-- we import arjs version without NFT but with marker + location based support -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-  <body style="margin : 0px; overflow: hidden;">
-    <a-scene embedded arjs>
-      <a-marker preset="hiro">
-        <a-entity
-          position="0 0 0"
-          scale="0.05 0.05 0.05"
-          gltf-model="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"
-        ></a-entity>
-      </a-marker>
-      <a-box position="5 0 -7" rotation="0 45 0" color="#4CC3D9"></a-box>
-      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
+  <head>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script>
+      // シーンが読み込まれた時に呼ばれる
+      AFRAME.registerComponent('shooter-game', {
+        init: function () {
+          // ゲームロジックを管理するメソッド
+          this.startGame();
+        },
+
+        startGame: function () {
+          // a-boxを出現させるインターバル
+          this.boxInterval = setInterval(this.spawnBox.bind(this), 1000);
+        },
+
+        spawnBox: function () {
+          // ランダムな位置にa-boxを生成する
+          const x = Math.random() * 10 - 5; // -5 ~ 5 の範囲
+          const y = Math.random() * 5;
+          const z = Math.random() * 10 - 15; // -15 ~ -5 の範囲
+          const box = document.createElement('a-box');
+          box.setAttribute('position', `${x} ${y} ${z}`);
+          box.setAttribute('color', '#4CC3D9');
+          this.el.sceneEl.appendChild(box);
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <a-scene shooter-game>
       <a-entity camera></a-entity>
     </a-scene>
   </body>
